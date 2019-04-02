@@ -1,6 +1,6 @@
 public interface ElevatorSystem {
     void getStatus();
     void setDestinationFloor(int elevatorID, int destinationFloor);
-    void createPickupRequest(int currentFloor, int destinationFloor);
+    void createPickupRequest(int pickupFloor, int destinationFloor);
     void nextStep();
 }

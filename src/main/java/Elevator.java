@@ -27,6 +27,62 @@ public class Elevator {
         checkIfReachedDestination();
     }
 
+    public int calculateCost(int pickupFloor, int targetFloor) {
+        int cost = 0;
+
+        cost += calculateTravelCost(pickupFloor, targetFloor);
+
+        Direction passengerDirection = determinePassengerDirection(pickupFloor, targetFloor);
+
+        if (direction == Direction.NONE) {
+            cost += calculateTravelCost(currentFloor, pickupFloor);
+        } else if (isPassengerIsOnTheWay(passengerDirection, pickupFloor)) {
+            cost += calculateTravelCost(currentFloor, pickupFloor);
+
+            int currentElevatorDelay = ElevatorController.STOP_COST;
+            cost += currentElevatorDelay;
+        } else {
+            cost += calculateTravelCost(currentFloor, destinationFloor);
+
+            int passengerExitCost = ElevatorController.STOP_COST;
+            cost += passengerExitCost;
+
+            cost += calculateTravelCost(pickupFloor, destinationFloor);
+        }
+
+        return cost;
+    }
+
+    private int calculateTravelCost(int startFloor, int finishFloor) {
+        return ElevatorController.FLOOR_PASS_COST * Math.abs(finishFloor - startFloor);
+    }
+
+    private boolean isPassengerIsOnTheWay(Direction passengerDirection, int pickupFloor) {
+        if (this.direction == passengerDirection) {
+            switch (direction) {
+                case UPWARDS:
+                    return pickupFloor > currentFloor;
+
+
+                case DOWNWARDS:
+                    return pickupFloor < currentFloor;
+            }
+        }
+
+        return false;
+    }
+
+    private Direction determinePassengerDirection(int pickupFloor, int targetFloor) {
+        if (targetFloor > pickupFloor) {
+            return Direction.UPWARDS;
+        } else if (targetFloor < pickupFloor) {
+            return Direction.DOWNWARDS;
+        } else {
+            return Direction.NONE;
+        }
+    }
+
+
     private void checkIfReachedDestination() {
         if (this.isMoving() && currentFloor == destinationFloor) {
             System.out.println("Elevator " + ID + " reached its destination");
