@@ -1,6 +1,7 @@
 public class Elevator {
     private int ID;
-    private int floor;
+    private int currentFloor;
+    private int destinationFloor;
     private Direction direction;
 
 
@@ -22,33 +23,66 @@ public class Elevator {
             case NONE:
                 break;
         }
+
+        checkIfReachedDestination();
+    }
+
+    private void checkIfReachedDestination() {
+        if (this.isMoving() && currentFloor == destinationFloor) {
+            System.out.println("Elevator " + ID + " reached its destination");
+            direction = Direction.NONE;
+        }
     }
 
     private void moveUpwards() {
-        if (floor < ElevatorController.MAXIMUM_FLOOR) {
-            System.out.println("Moving upwards");
-            floor++;
-        }
-
-        if (floor == ElevatorController.MAXIMUM_FLOOR) {
-            direction = Direction.NONE;
+        if (currentFloor < destinationFloor) {
+            System.out.println("Elevator " + ID + " moving upwards");
+            currentFloor++;
         }
     }
 
     private void moveDownwards() {
-        if (floor > ElevatorController.MINIMUM_FLOOR) {
-            System.out.println("Moving downwards");
-            floor--;
-        }
-
-        if (floor == ElevatorController.MINIMUM_FLOOR) {
-            direction = Direction.NONE;
+        if (currentFloor > destinationFloor) {
+            System.out.println("Elevator " + ID + " moving downwards");
+            currentFloor--;
         }
     }
 
     @Override
     public String toString() {
-        return String.format("Elevator: %d, floor: %d, direction: %s", ID, floor, direction);
+        return String.format("Elevator: %d, currentFloor: %d, destinationFloor: %d , direction: %s",
+                ID, currentFloor, destinationFloor, direction);
+    }
+
+    public void setDestinationFloor(int destinationFloor) {
+        validateDestinationFloor(destinationFloor);
+
+        this.destinationFloor = destinationFloor;
+        System.out.println("Elevator " + ID + " changed destination to floor: " + destinationFloor);
+
+        determineDirection();
+    }
+
+    private void determineDirection() {
+        if (destinationFloor > currentFloor) {
+            direction = Direction.UPWARDS;
+        } else if (destinationFloor < currentFloor) {
+            direction = Direction.DOWNWARDS;
+        } else {
+            System.out.println("You are on this floor :)");
+            direction = Direction.NONE;
+        }
+    }
+
+    private void validateDestinationFloor(int destinationFloor) {
+        if (destinationFloor > ElevatorController.MAXIMUM_FLOOR
+                || destinationFloor < ElevatorController.MINIMUM_FLOOR) {
+            throw new RuntimeException("Floor nr " + destinationFloor + " does not exist!");
+        }
+    }
+
+    private boolean isMoving() {
+        return direction != Direction.NONE;
     }
 
     public int getID() {
@@ -59,12 +93,12 @@ public class Elevator {
         this.ID = ID;
     }
 
-    public int getFloor() {
-        return floor;
+    public int getCurrentFloor() {
+        return currentFloor;
     }
 
-    public void setFloor(int floor) {
-        this.floor = floor;
+    public void setCurrentFloor(int currentFloor) {
+        this.currentFloor = currentFloor;
     }
 
     public Direction getDirection() {
@@ -73,5 +107,9 @@ public class Elevator {
 
     public void setDirection(Direction direction) {
         this.direction = direction;
+    }
+
+    public int getDestinationFloor() {
+        return destinationFloor;
     }
 }
