@@ -57,4 +57,22 @@ public class TestCases {
         int cost = 6 * ElevatorController.FLOOR_PASS_COST + ElevatorController.STOP_COST;
         assertEquals(cost, elevator.calculateCost(2, 5));
     }
+
+    @Test
+    public void testCase7() {
+        Elevator elevator = new Elevator(0);
+        elevator.setCurrentFloor(7);
+        elevator.setDestinationFloor(6);
+        int cost = 8 * ElevatorController.FLOOR_PASS_COST + ElevatorController.STOP_COST;
+        assertEquals(cost, elevator.calculateCost(2, 5));
+    }
+
+    @Test
+    public void testCase8() {
+        Elevator elevator = new Elevator(0);
+        elevator.setCurrentFloor(7);
+        elevator.setDestinationFloor(2);
+        int cost = 8 * ElevatorController.FLOOR_PASS_COST;
+        assertEquals(cost, elevator.calculateCost(2, 5));
+    }
 }

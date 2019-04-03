@@ -29,24 +29,22 @@ public class Elevator {
 
     public int calculateCost(int pickupFloor, int targetFloor) {
         int cost = 0;
-
         cost += calculateTravelCost(pickupFloor, targetFloor);
-
         Direction passengerDirection = determinePassengerDirection(pickupFloor, targetFloor);
 
         if (direction == Direction.NONE) {
             cost += calculateTravelCost(currentFloor, pickupFloor);
         } else if (isPassengerIsOnTheWay(passengerDirection, pickupFloor)) {
             cost += calculateTravelCost(currentFloor, pickupFloor);
-
             int currentElevatorDelay = ElevatorController.STOP_COST;
             cost += currentElevatorDelay;
         } else {
             cost += calculateTravelCost(currentFloor, destinationFloor);
 
-            int passengerExitCost = ElevatorController.STOP_COST;
-            cost += passengerExitCost;
-
+            if (destinationFloor != pickupFloor) {
+                int passengerExitCost = ElevatorController.STOP_COST;
+                cost += passengerExitCost;
+            }
             cost += calculateTravelCost(pickupFloor, destinationFloor);
         }
 
@@ -62,7 +60,6 @@ public class Elevator {
             switch (direction) {
                 case UPWARDS:
                     return pickupFloor > currentFloor;
-
 
                 case DOWNWARDS:
                     return pickupFloor < currentFloor;
@@ -81,7 +78,6 @@ public class Elevator {
             return Direction.NONE;
         }
     }
-
 
     private void checkIfReachedDestination() {
         if (this.isMoving() && currentFloor == destinationFloor) {
