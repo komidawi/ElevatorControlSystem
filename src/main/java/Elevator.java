@@ -24,7 +24,10 @@ public class Elevator {
                 break;
         }
 
-        checkIfReachedDestination();
+        if (isDestinationReached()) {
+            System.out.println("Elevator " + ID + " reached its destination");
+            setDirection(Direction.NONE);
+        }
     }
 
     public int calculateCost(int pickupFloor, int targetFloor) {
@@ -79,11 +82,8 @@ public class Elevator {
         }
     }
 
-    private void checkIfReachedDestination() {
-        if (this.isMoving() && currentFloor == destinationFloor) {
-            System.out.println("Elevator " + ID + " reached its destination");
-            direction = Direction.NONE;
-        }
+    private boolean isDestinationReached() {
+        return this.isMoving() && currentFloor == destinationFloor;
     }
 
     private void moveUpwards() {
