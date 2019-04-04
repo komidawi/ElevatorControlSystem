@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Elevator {
     private int ID;
@@ -66,31 +67,32 @@ public class Elevator {
     public int calculateCost(int pickupFloor, int targetFloor) {
         int cost = 0;
         Direction passengerDirection = determinePassengerDirection(pickupFloor, targetFloor);
-        Set<Integer> uniqueNewDestinationFloors = prepareUniqueDestinationFloors(pickupFloor, targetFloor);
+        List<Integer> newDestinationFloors = prepareNewDestinationFloors(pickupFloor, targetFloor);
 
         if (isElevatorIdle()) {
             cost += calculateCostForIdleElevator(pickupFloor, targetFloor);
         } else if (isPassengerOnCourse(passengerDirection, pickupFloor)) {
-            cost += calculateCostForPassengerOnCourse(uniqueNewDestinationFloors, targetFloor);
+            cost += calculateCostForPassengerOnCourse(newDestinationFloors, targetFloor);
         } else {
             System.out.println("Cannot take passenger. Please wait.");
+            cost = Integer.MAX_VALUE;
         }
 
         return cost;
     }
 
-    private Set<Integer> prepareUniqueDestinationFloors(int pickupFloor, int targetFloor) {
+    private List<Integer> prepareNewDestinationFloors(int pickupFloor, int targetFloor) {
         List<Integer> newDestinationFloors = new ArrayList<>(this.destinationFloors);
         newDestinationFloors.add(pickupFloor);
         newDestinationFloors.add(targetFloor);
         Collections.sort(newDestinationFloors);
-        return new HashSet<>(newDestinationFloors);
+        return newDestinationFloors;
     }
 
-    private int calculateCostForPassengerOnCourse(Set<Integer> uniqueNewDestinationFloors, int targetFloor) {
+    private int calculateCostForPassengerOnCourse(List<Integer> newDestinationFloors, int targetFloor) {
         int cost = 0;
         cost += calculateTravelCost(currentFloor, targetFloor);
-        int stops = (int) determineStopsCount(uniqueNewDestinationFloors, targetFloor);
+        int stops = (int) determineStopsCount(newDestinationFloors, targetFloor);
         cost += ElevatorController.STOP_COST * stops;
         return cost;
     }
@@ -131,13 +133,14 @@ public class Elevator {
         return false;
     }
 
-    private long determineStopsCount(Set<Integer> floors, int targetFloor) {
-        return floors.stream().filter(floor -> floor <= targetFloor).count();
+    private long determineStopsCount(List<Integer> floors, int targetFloor) {
+        return floors.stream().filter(floor ->
+                Collections.frequency(floors, floor) <= 1 && floor <= targetFloor).count();
     }
 
     @Override
     public String toString() {
-        return String.format("Elevator: %d, currentFloor: %d, destinationFloors: %s , direction: %s",
+        return String.format("Elevator: %d, currentFloor: %d, destinationFloors: %s, direction: %s",
                 ID, currentFloor, destinationFloors, direction);
     }
 
@@ -145,8 +148,11 @@ public class Elevator {
         validateDestinationFloor(destinationFloor);
 
         if (direction == determinePassengerDirection(currentFloor, destinationFloor) || isElevatorIdle()) {
-            destinationFloors.add(destinationFloor);
-            Collections.sort(destinationFloors);
+
+            if (!destinationFloors.contains(destinationFloor)) {
+                destinationFloors.add(destinationFloor);
+                Collections.sort(destinationFloors);
+            }
 
             if (direction == Direction.DOWNWARDS) {
                 Collections.reverse(destinationFloors);
