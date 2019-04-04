@@ -11,6 +11,12 @@ Note: Project is still in development phase.
 
 Just simply download/clone the repository.
 
+### Configuration
+
+You can change specific settings such as minimum/maximum floor number in `ElevatorController.java`.
+
+You can change amount of elevators available in `ElevatorApp.java`.
+
 ### Running
 
 Make sure you have JDK (Java Development Kit) installed. You can download it e.g. from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html). Then open `src\main\java\` directory in terminal and type
@@ -47,8 +53,8 @@ As the project is in early phase, there is some work to be done:
 	* write more sophisticated test cases 
 	* write a fuzzer
 	* provide high code coverage
-* probably some other minor improvements
 * improve calculation to count the amount of passengers into travel cost
 * user input validation
 * saving preferences
+* probably some other minor improvements
 * GUI (in the future)
