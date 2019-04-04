@@ -1,5 +1,5 @@
 public interface ElevatorSystem {
-    void getStatus();
+    void showStatus();
     void addDestinationFloor(int elevatorID, int destinationFloor);
     void createPickupRequest(int pickupFloor, int destinationFloor);
     void nextStep();

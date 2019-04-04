@@ -31,6 +31,7 @@ public class ElevatorController implements ElevatorSystem {
     public void createPickupRequest(int pickupFloor, int destinationFloor) {
         int cheapestElevatorID = findCheapestElevator(pickupFloor, destinationFloor);
 
+        System.out.printf("Sending elevator #%d to floors [%d, %d]\n", cheapestElevatorID, pickupFloor, destinationFloor);
         addDestinationFloor(cheapestElevatorID, pickupFloor);
         addDestinationFloor(cheapestElevatorID, destinationFloor);
     }
@@ -64,7 +65,7 @@ public class ElevatorController implements ElevatorSystem {
     }
 
     @Override
-    public void getStatus() {
+    public void showStatus() {
         System.out.println("[STATUS]");
         elevators.forEach(System.out::println);
     }
@@ -74,5 +75,9 @@ public class ElevatorController implements ElevatorSystem {
         System.out.printf("\n[STEP #%d]\n", stepNumber);
         stepNumber++;
         elevators.forEach(Elevator::nextStep);
+    }
+
+    public Elevator getElevator(int ID) {
+        return elevators.get(ID);
     }
 }

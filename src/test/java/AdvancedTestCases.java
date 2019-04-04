@@ -29,7 +29,7 @@ public class AdvancedTestCases {
     public void testCase3() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(2);
-        int cost = 2 * ElevatorController.FLOOR_PASS_COST;
+        int cost = 4 * ElevatorController.FLOOR_PASS_COST;
         assertEquals(cost, elevator.calculateCost(4, 6));
     }
 

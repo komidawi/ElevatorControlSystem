@@ -9,7 +9,7 @@ public class Elevator {
 
     public Elevator(int ID) {
         this.ID = ID;
-        direction = Direction.NONE;
+        setElevatorIdle();
     }
 
     public void nextStep() {
@@ -50,7 +50,7 @@ public class Elevator {
     }
 
     private boolean isMoving() {
-        return direction != Direction.NONE;
+        return !isElevatorIdle();
     }
 
     private void handleCurrentDestination() {
@@ -59,33 +59,49 @@ public class Elevator {
         destinationFloors.remove(0);
 
         if (destinationFloors.isEmpty()) {
-            setDirection(Direction.NONE);
+            setElevatorIdle();
         }
     }
 
-    // TODO:
     public int calculateCost(int pickupFloor, int targetFloor) {
         int cost = 0;
         Direction passengerDirection = determinePassengerDirection(pickupFloor, targetFloor);
+        Set<Integer> uniqueNewDestinationFloors = prepareUniqueDestinationFloors(pickupFloor, targetFloor);
 
-        List<Integer> newDestinationFloors = new ArrayList<>(this.destinationFloors);
-        newDestinationFloors.add(pickupFloor);
-        newDestinationFloors.add(targetFloor);
-        Collections.sort(newDestinationFloors);
-        Set<Integer> uniqueNewDestinationFloors = new HashSet<>(newDestinationFloors);
-
-        if (direction == Direction.NONE) {
-            cost += calculateTravelCost(currentFloor, pickupFloor);
+        if (isElevatorIdle()) {
+            cost += calculateCostForIdleElevator(pickupFloor, targetFloor);
         } else if (isPassengerOnCourse(passengerDirection, pickupFloor)) {
-            cost += calculateTravelCost(currentFloor, targetFloor);
-            int stops = (int) determineStopsCount(uniqueNewDestinationFloors, targetFloor);
-            cost += ElevatorController.STOP_COST * stops;
+            cost += calculateCostForPassengerOnCourse(uniqueNewDestinationFloors, targetFloor);
         } else {
             System.out.println("Cannot take passenger. Please wait.");
         }
 
         return cost;
     }
+
+    private Set<Integer> prepareUniqueDestinationFloors(int pickupFloor, int targetFloor) {
+        List<Integer> newDestinationFloors = new ArrayList<>(this.destinationFloors);
+        newDestinationFloors.add(pickupFloor);
+        newDestinationFloors.add(targetFloor);
+        Collections.sort(newDestinationFloors);
+        return new HashSet<>(newDestinationFloors);
+    }
+
+    private int calculateCostForPassengerOnCourse(Set<Integer> uniqueNewDestinationFloors, int targetFloor) {
+        int cost = 0;
+        cost += calculateTravelCost(currentFloor, targetFloor);
+        int stops = (int) determineStopsCount(uniqueNewDestinationFloors, targetFloor);
+        cost += ElevatorController.STOP_COST * stops;
+        return cost;
+    }
+
+    private int calculateCostForIdleElevator(int pickupFloor, int targetFloor) {
+        int cost = 0;
+        cost += calculateTravelCost(currentFloor, pickupFloor);
+        cost += calculateTravelCost(pickupFloor, targetFloor);
+        return cost;
+    }
+
 
     private Direction determinePassengerDirection(int pickupFloor, int targetFloor) {
         if (targetFloor > pickupFloor) {
@@ -128,7 +144,7 @@ public class Elevator {
     public void addDestinationFloor(int destinationFloor) {
         validateDestinationFloor(destinationFloor);
 
-        if (direction == determinePassengerDirection(currentFloor, destinationFloor) || direction == Direction.NONE) {
+        if (direction == determinePassengerDirection(currentFloor, destinationFloor) || isElevatorIdle()) {
             destinationFloors.add(destinationFloor);
             Collections.sort(destinationFloors);
 
@@ -139,7 +155,7 @@ public class Elevator {
             System.out.println("Elevator " + ID + " added destination to floor: " + destinationFloor
                     + ", current destinationFloors: " + destinationFloors);
 
-            determineDirection();
+            determineAndSetDirection();
         } else {
             System.out.println("Currently system does not support this case. Please wait for a free elevator");
         }
@@ -152,15 +168,23 @@ public class Elevator {
         }
     }
 
-    private void determineDirection() {
+    private void determineAndSetDirection() {
         if (getClosestDestination() > currentFloor) {
             direction = Direction.UPWARDS;
         } else if (getClosestDestination() < currentFloor) {
             direction = Direction.DOWNWARDS;
         } else {
             System.out.println("You are on this floor :)");
-            direction = Direction.NONE;
+            setElevatorIdle();
         }
+    }
+
+    public boolean isElevatorIdle() {
+        return direction == Direction.NONE;
+    }
+
+    public void setElevatorIdle() {
+        setDirection(Direction.NONE);
     }
 
     public int getClosestDestination() {
