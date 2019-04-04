@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Elevator {
     private int ID;
@@ -33,21 +32,21 @@ public class Elevator {
     }
 
     private void moveUpwards() {
-        if (currentFloor < getClosestDestination()) {
-            System.out.println("Elevator " + ID + " moving upwards");
+        if (currentFloor < getNextDestination()) {
+            System.out.println("Elevator " + ID + " moving upwards from " + currentFloor + " to " + getNextDestination());
             currentFloor++;
         }
     }
 
     private void moveDownwards() {
-        if (currentFloor > getClosestDestination()) {
-            System.out.println("Elevator " + ID + " moving downwards");
+        if (currentFloor > getNextDestination()) {
+            System.out.println("Elevator " + ID + " moving downwards from " + currentFloor + " to " + getNextDestination());
             currentFloor--;
         }
     }
 
     private boolean isDestinationReached() {
-        return this.isMoving() && currentFloor == getClosestDestination();
+        return this.isMoving() && currentFloor == getNextDestination();
     }
 
     private boolean isMoving() {
@@ -55,7 +54,8 @@ public class Elevator {
     }
 
     private void handleCurrentDestination() {
-        System.out.println("Elevator " + ID + " reached its destination");
+        System.out.println("Elevator " + ID + " reached its destination floor: " + getNextDestination() +
+                ", floors remaining: " + getDestinationFloors());
 
         destinationFloors.remove(0);
 
@@ -64,27 +64,26 @@ public class Elevator {
         }
     }
 
-    public int calculateCost(int pickupFloor, int targetFloor) {
+    public int calculateCost(PickupRequest request) {
         int cost = 0;
-        Direction passengerDirection = determinePassengerDirection(pickupFloor, targetFloor);
-        List<Integer> newDestinationFloors = prepareNewDestinationFloors(pickupFloor, targetFloor);
+        Direction passengerDirection = determineDirection(request);
+        List<Integer> newDestinationFloors = prepareNewDestinationFloors(request);
 
         if (isElevatorIdle()) {
-            cost += calculateCostForIdleElevator(pickupFloor, targetFloor);
-        } else if (isPassengerOnCourse(passengerDirection, pickupFloor)) {
-            cost += calculateCostForPassengerOnCourse(newDestinationFloors, targetFloor);
+            cost += calculateCostForIdleElevator(request);
+        } else if (isPassengerOnCourse(passengerDirection, request.getPickupFloor())) {
+            cost += calculateCostForPassengerOnCourse(newDestinationFloors, request.getTargetFloor());
         } else {
-            System.out.println("Cannot take passenger. Please wait.");
             cost = Integer.MAX_VALUE;
         }
 
         return cost;
     }
 
-    private List<Integer> prepareNewDestinationFloors(int pickupFloor, int targetFloor) {
+    private List<Integer> prepareNewDestinationFloors(PickupRequest request) {
         List<Integer> newDestinationFloors = new ArrayList<>(this.destinationFloors);
-        newDestinationFloors.add(pickupFloor);
-        newDestinationFloors.add(targetFloor);
+        newDestinationFloors.add(request.getPickupFloor());
+        newDestinationFloors.add(request.getTargetFloor());
         Collections.sort(newDestinationFloors);
         return newDestinationFloors;
     }
@@ -97,18 +96,18 @@ public class Elevator {
         return cost;
     }
 
-    private int calculateCostForIdleElevator(int pickupFloor, int targetFloor) {
+    private int calculateCostForIdleElevator(PickupRequest request) {
         int cost = 0;
-        cost += calculateTravelCost(currentFloor, pickupFloor);
-        cost += calculateTravelCost(pickupFloor, targetFloor);
+        cost += calculateTravelCost(currentFloor, request.getPickupFloor());
+        cost += calculateTravelCost(request.getPickupFloor(), request.getTargetFloor());
         return cost;
     }
 
 
-    private Direction determinePassengerDirection(int pickupFloor, int targetFloor) {
-        if (targetFloor > pickupFloor) {
+    private Direction determineDirection(PickupRequest request) {
+        if (request.getTargetFloor() > request.getPickupFloor()) {
             return Direction.UPWARDS;
-        } else if (targetFloor < pickupFloor) {
+        } else if (request.getTargetFloor() < request.getPickupFloor()) {
             return Direction.DOWNWARDS;
         } else {
             return Direction.NONE;
@@ -134,8 +133,13 @@ public class Elevator {
     }
 
     private long determineStopsCount(List<Integer> floors, int targetFloor) {
-        return floors.stream().filter(floor ->
-                Collections.frequency(floors, floor) <= 1 && floor <= targetFloor).count();
+        if (targetFloor > getLastDestination()) {
+            return floors.stream().filter(floor ->
+                    Collections.frequency(floors, floor) <= 1 && floor < targetFloor).count();
+        } else {
+            return floors.stream().filter(floor ->
+                    Collections.frequency(floors, floor) <= 1 && floor <= targetFloor).count();
+        }
     }
 
     @Override
@@ -144,22 +148,20 @@ public class Elevator {
                 ID, currentFloor, destinationFloors, direction);
     }
 
+    // TODO: refactor
     public void addDestinationFloor(int destinationFloor) {
         validateDestinationFloor(destinationFloor);
 
-        if (direction == determinePassengerDirection(currentFloor, destinationFloor) || isElevatorIdle()) {
+        if (direction == determineDirection(new PickupRequest(currentFloor, destinationFloor)) || isElevatorIdle()) {
 
             if (!destinationFloors.contains(destinationFloor)) {
                 destinationFloors.add(destinationFloor);
                 Collections.sort(destinationFloors);
             }
 
-            if (direction == Direction.DOWNWARDS) {
+            if (determineDirection(new PickupRequest(getNextDestination(), destinationFloor)) == Direction.DOWNWARDS) {
                 Collections.reverse(destinationFloors);
             }
-
-            System.out.println("Elevator " + ID + " added destination to floor: " + destinationFloor
-                    + ", current destinationFloors: " + destinationFloors);
 
             determineAndSetDirection();
         } else {
@@ -175,9 +177,9 @@ public class Elevator {
     }
 
     private void determineAndSetDirection() {
-        if (getClosestDestination() > currentFloor) {
+        if (getNextDestination() > currentFloor) {
             direction = Direction.UPWARDS;
-        } else if (getClosestDestination() < currentFloor) {
+        } else if (getNextDestination() < currentFloor) {
             direction = Direction.DOWNWARDS;
         } else {
             System.out.println("You are on this floor :)");
@@ -193,8 +195,12 @@ public class Elevator {
         setDirection(Direction.NONE);
     }
 
-    public int getClosestDestination() {
+    public int getNextDestination() {
         return destinationFloors.get(0);
+    }
+
+    public int getLastDestination() {
+        return destinationFloors.get(destinationFloors.size() - 1);
     }
 
     public int getID() {
@@ -219,5 +225,9 @@ public class Elevator {
 
     public void setDirection(Direction direction) {
         this.direction = direction;
+    }
+
+    public List<Integer> getDestinationFloors() {
+        return destinationFloors;
     }
 }

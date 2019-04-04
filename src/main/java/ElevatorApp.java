@@ -6,15 +6,24 @@ public class ElevatorApp {
     private static Scanner scanner;
 
     public static void main(String[] args) {
-        controller = new ElevatorController(3);
+        initialize();
+        run();
+    }
 
+    private static void initialize() {
+        controller = new ElevatorController(3);
+        scanner = new Scanner(System.in);
+    }
+
+    private static void run() {
         showWelcomeMenu();
         showHelp();
+        provideCommunicationWithUser();
+    }
 
-        scanner = new Scanner(System.in);
+    private static void provideCommunicationWithUser() {
         boolean ifContinue = true;
         while (ifContinue) {
-
             System.out.print("> ");
             int chosenOption = scanner.nextInt();
 
@@ -46,7 +55,7 @@ public class ElevatorApp {
     }
 
     private static void showAddDestinationFloorMenu() {
-        System.out.println("Specify elevatorID and destinationFloor separated by spaces");
+        System.out.println("Specify elevatorID and targetFloor separated by spaces");
         int elevatorID = scanner.nextInt();
         int destinationFloor = scanner.nextInt();
         controller.addDestinationFloor(elevatorID, destinationFloor);
@@ -58,7 +67,7 @@ public class ElevatorApp {
     }
 
     private static void showCreatePickupRequestMenu() {
-        System.out.println("Specify pickupFloor and destinationFloor separated by spaces");
+        System.out.println("Specify pickupFloor and targetFloor separated by spaces");
         int pickupFloor = scanner.nextInt();
         int destinationFloor = scanner.nextInt();
         controller.createPickupRequest(pickupFloor, destinationFloor);

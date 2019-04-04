@@ -29,28 +29,39 @@ public class ElevatorController implements ElevatorSystem {
 
     @Override
     public void createPickupRequest(int pickupFloor, int destinationFloor) {
-        int cheapestElevatorID = findCheapestElevator(pickupFloor, destinationFloor);
+        PickupRequest pickupRequest = new PickupRequest(pickupFloor, destinationFloor);
 
-        System.out.printf("Sending elevator #%d to floors [%d, %d]\n", cheapestElevatorID, pickupFloor, destinationFloor);
-        addDestinationFloor(cheapestElevatorID, pickupFloor);
-        addDestinationFloor(cheapestElevatorID, destinationFloor);
+        int cheapestElevatorID = findCheapestElevator(pickupRequest);
+
+        if (cheapestElevatorID != -1) {
+            System.out.printf("Sending elevator #%d to floors [%d, %d]\n", cheapestElevatorID, pickupFloor, destinationFloor);
+            addDestinationFloor(cheapestElevatorID, pickupFloor);
+            addDestinationFloor(cheapestElevatorID, destinationFloor);
+        } else {
+            System.out.println("System does not support this case. Please wait for an elevator to be available for you.");
+        }
     }
 
-    public Integer findCheapestElevator(int pickupFloor, int destinationFloor) {
-        Map<Integer, Integer> costs = calculateCosts(pickupFloor, destinationFloor);
+    public Integer findCheapestElevator(PickupRequest request) {
+        Map<Integer, Integer> costs = calculateCosts(request);
 
         Integer minimumCost = Collections.min(costs.values());
-        Integer cheapestElevatorID = MapUtils.getKey(costs, minimumCost);
-        System.out.printf("Cheapest Elevator is: %d, cost: %d\n", cheapestElevatorID, minimumCost);
 
-        return cheapestElevatorID;
+        if (minimumCost != Integer.MAX_VALUE) {
+            Integer cheapestElevatorID = MapUtils.getKey(costs, minimumCost);
+            System.out.printf("Cheapest Elevator is: %d, cost: %d\n", cheapestElevatorID, minimumCost);
+
+            return cheapestElevatorID;
+        } else {
+            return -1;
+        }
     }
 
-    private Map<Integer, Integer> calculateCosts(int pickupFloor, int destinationFloor) {
+    private Map<Integer, Integer> calculateCosts(PickupRequest request) {
         Map<Integer, Integer> costs = new HashMap<>();
 
         for (Elevator elevator : elevators) {
-            int cost = elevator.calculateCost(pickupFloor, destinationFloor);
+            int cost = elevator.calculateCost(request);
             costs.put(elevator.getID(), cost);
             System.out.printf("Elevator #%d, cost: %d\n", elevator.getID(), cost);
         }
@@ -62,6 +73,7 @@ public class ElevatorController implements ElevatorSystem {
     public void addDestinationFloor(int elevatorID, int destinationFloor) {
         Elevator elevator = elevators.get(elevatorID);
         elevator.addDestinationFloor(destinationFloor);
+        System.out.println("Elevator #" + elevatorID + ": added destination floor: " + destinationFloor);
     }
 
     @Override
