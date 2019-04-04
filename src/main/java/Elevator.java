@@ -33,14 +33,14 @@ public class Elevator {
 
     private void moveUpwards() {
         if (currentFloor < getNextDestination()) {
-            System.out.println("Elevator " + ID + " moving upwards from " + currentFloor + " to " + getNextDestination());
+            System.out.println("Elevator " + ID + " moving upwards from floor: " + currentFloor + " to floor: " + (currentFloor + 1));
             currentFloor++;
         }
     }
 
     private void moveDownwards() {
         if (currentFloor > getNextDestination()) {
-            System.out.println("Elevator " + ID + " moving downwards from " + currentFloor + " to " + getNextDestination());
+            System.out.println("Elevator " + ID + " moving downwards from floor: " + currentFloor + " to floor: " + (currentFloor - 1));
             currentFloor--;
         }
     }
@@ -54,10 +54,11 @@ public class Elevator {
     }
 
     private void handleCurrentDestination() {
-        System.out.println("Elevator " + ID + " reached its destination floor: " + getNextDestination() +
-                ", floors remaining: " + getDestinationFloors());
+        System.out.print("Elevator " + ID + " reached its destination floor: " + getNextDestination());
 
         destinationFloors.remove(0);
+
+        System.out.println(", floors remaining: " + getDestinationFloors());
 
         if (destinationFloors.isEmpty()) {
             setElevatorIdle();
