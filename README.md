@@ -1,9 +1,9 @@
 ﻿# Elevator Control System
 
-Elevator Control System provides functionality to handle elevator movement efficiently. It calculates a minimum cost of travel from pickup to destination floor and then sends an appropriate elevator. Main advantage of this destination dispatch system over trivial FCFS scheduling is an ability to take passenger on-the-fly without unnecessary waiting untill all remaining destinations are reached. It also cares of cases when current and coming passengers have common pickup/destination floors and groups them.
+Elevator Control System provides functionality to handle elevator movement efficiently. It calculates a minimum cost of travel from pickup to destination floor and then sends an appropriate elevator. The main advantage of this destination dispatch system over trivial FCFS scheduling is an ability to take a passenger on-the-fly without unnecessary waiting until all remaining destinations are reached. It also cares of cases when current and coming passengers have common pickup/destination floors and groups them.
 
 
-Note: Project is still in developement phase.
+Note: Project is still in development phase.
 
 ## Usage
 
@@ -32,14 +32,15 @@ Interface provides four functions:
 * `showStatus` shows state of all elevators: ID, current floor, destinations and direction
 * `createPickupRequest` allows to simulate a passenger calling for an elevator
 * `addDestinationFloor` adds another destination point to the specified elevator
-* `nextStep` simulates time flow and elevators movement. Elevators move only when this function is called.
+* `nextStep` simulates time flow and elevator movement. Elevators move only when this function is called.
 
 ## Areas of improvement
 
-As project is in early phase there are some things to be done:
+As the project is in early phase, there is some work to be done:
 
-* **[crucial]** handle a case when passenger is not on elevator's course
-* improve `nextStep` to simulate time-flow realistically, because now every activity lasts the same duration no matter of real time consumption
+* **[crucial]** handle the case when passenger is not on elevator's course
+* **[crucial]** handle the case when passenger requesting travel downwards is above the sent elevator
+* improve `nextStep` to simulate time-flow realistically, because now every activity lasts the same duration no matter of real-time consumption
 * when two elevators have the same cost prefer the idle one
 * tidy `ElevatorApp.java` 
 * some testing things:
@@ -47,5 +48,7 @@ As project is in early phase there are some things to be done:
 	* write a fuzzer
 	* provide high code coverage
 * probably some other minor improvements
-* improve calculation to count amount of passengers into travel cost
+* improve calculation to count the amount of passengers into travel cost
+* user input validation
+* saving preferences
 * GUI (in the future)
