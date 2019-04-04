@@ -13,11 +13,18 @@ Just simply download/clone the repository.
 
 ### Running
 
-Make sure you have JRE (Java Runtime Environment) installed. You can download it e.g. from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html). Then open `build\classes\java\main` directory in terminal and type
+Make sure you have JRE (Java Runtime Environment) installed. You can download it e.g. from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html). Then open `src\main\java\` directory in terminal and type
 
+```
+javac ElevatorApp.java
+```
+
+to compile required classes. Then run application by typing
 ```
 java ElevatorApp
 ```
+
+You can also just simply open project in any IDE e.g. IntelliJ IDEA and then run ElevatorApp.java.
 
 ### Function calls
 
@@ -34,9 +41,11 @@ As project is in early phase there are some things to be done:
 * **[crucial]** handle a case when passenger is not on elevator's course
 * improve `nextStep` to simulate time-flow realistically, because now every activity lasts the same duration no matter of real time consumption
 * when two elevators have the same cost prefer the idle one
+* tidy `ElevatorApp.java` 
 * some testing things:
 	* write more sophisticated test cases 
 	* write a fuzzer
 	* provide high code coverage
 * probably some other minor improvements
+* improve calculation to count amount of passengers into travel cost
 * GUI (in the future)
