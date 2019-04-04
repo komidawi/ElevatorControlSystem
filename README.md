@@ -13,7 +13,7 @@ Just simply download/clone the repository.
 
 ### Running
 
-Make sure you have JRE (Java Runtime Environment) installed. You can download it e.g. from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html). Then open `src\main\java\` directory in terminal and type
+Make sure you have JDK (Java Development Kit) installed. You can download it e.g. from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html). Then open `src\main\java\` directory in terminal and type
 
 ```
 javac ElevatorApp.java
