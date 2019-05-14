@@ -208,20 +208,8 @@ public class Elevator {
         return ID;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor;
-    }
-
     public void setCurrentFloor(int currentFloor) {
         this.currentFloor = currentFloor;
-    }
-
-    public Direction getDirection() {
-        return direction;
     }
 
     public void setDirection(Direction direction) {
