@@ -27,6 +27,12 @@ public class ElevatorController implements ElevatorSystem {
         }
     }
 
+    public static void validateDestinationFloor(int destinationFloor) throws IllegalArgumentException {
+        if (destinationFloor > MAXIMUM_FLOOR || destinationFloor < MINIMUM_FLOOR) {
+            throw new IllegalArgumentException("Floor nr " + destinationFloor + " does not exist!");
+        }
+    }
+
     @Override
     public void createPickupRequest(int pickupFloor, int destinationFloor) {
         PickupRequest pickupRequest = new PickupRequest(pickupFloor, destinationFloor);

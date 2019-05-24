@@ -67,7 +67,7 @@ public class Elevator {
 
     public int calculateCost(PickupRequest request) {
         int cost = 0;
-        Direction passengerDirection = determineDirection(request);
+        Direction passengerDirection = ElevatorUtils.determineDirection(request);
         List<Integer> newDestinationFloors = prepareNewDestinationFloors(request);
 
         if (isElevatorIdle()) {
@@ -91,7 +91,7 @@ public class Elevator {
 
     private int calculateCostForPassengerOnCourse(List<Integer> newDestinationFloors, int targetFloor) {
         int cost = 0;
-        cost += calculateTravelCost(currentFloor, targetFloor);
+        cost += ElevatorUtils.calculateTravelCost(currentFloor, targetFloor);
         int stops = (int) determineStopsCount(newDestinationFloors, targetFloor);
         cost += ElevatorController.STOP_COST * stops;
         return cost;
@@ -99,24 +99,9 @@ public class Elevator {
 
     private int calculateCostForIdleElevator(PickupRequest request) {
         int cost = 0;
-        cost += calculateTravelCost(currentFloor, request.getPickupFloor());
-        cost += calculateTravelCost(request.getPickupFloor(), request.getTargetFloor());
+        cost += ElevatorUtils.calculateTravelCost(currentFloor, request.getPickupFloor());
+        cost += ElevatorUtils.calculateTravelCost(request.getPickupFloor(), request.getTargetFloor());
         return cost;
-    }
-
-
-    private Direction determineDirection(PickupRequest request) {
-        if (request.getTargetFloor() > request.getPickupFloor()) {
-            return Direction.UPWARDS;
-        } else if (request.getTargetFloor() < request.getPickupFloor()) {
-            return Direction.DOWNWARDS;
-        } else {
-            return Direction.NONE;
-        }
-    }
-
-    private int calculateTravelCost(int startFloor, int finishFloor) {
-        return ElevatorController.FLOOR_PASS_COST * Math.abs(finishFloor - startFloor);
     }
 
     private boolean isPassengerOnCourse(Direction passengerDirection, int pickupFloor) {
@@ -149,43 +134,32 @@ public class Elevator {
                 ID, currentFloor, destinationFloors, direction);
     }
 
-    // TODO: refactor
-    public void addDestinationFloor(int destinationFloor) {
-        validateDestinationFloor(destinationFloor);
+    public boolean addDestinationFloor(int destinationFloor) {
+        try {
+            ElevatorController.validateDestinationFloor(destinationFloor);
 
-        if (direction == determineDirection(new PickupRequest(currentFloor, destinationFloor)) || isElevatorIdle()) {
+            Direction destinationDirection = ElevatorUtils.determineDirection(currentFloor, destinationFloor);
 
-            if (!destinationFloors.contains(destinationFloor)) {
+            if (isElevatorIdle()) {
                 destinationFloors.add(destinationFloor);
-                Collections.sort(destinationFloors);
+                setDirection(destinationDirection);
+                return true;
+            } else if (direction == destinationDirection) {
+                if (!destinationFloors.contains(destinationFloor)) {
+                    destinationFloors.add(destinationFloor);
+                    Collections.sort(destinationFloors);
+                    return true;
+                }
+            } else {
+                System.out.println("Currently system does not support this case. Please wait for a free elevator");
+                return false;
             }
-
-            if (determineDirection(new PickupRequest(getNextDestination(), destinationFloor)) == Direction.DOWNWARDS) {
-                Collections.reverse(destinationFloors);
-            }
-
-            determineAndSetDirection();
-        } else {
-            System.out.println("Currently system does not support this case. Please wait for a free elevator");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
-    }
 
-    private void validateDestinationFloor(int destinationFloor) {
-        if (destinationFloor > ElevatorController.MAXIMUM_FLOOR
-                || destinationFloor < ElevatorController.MINIMUM_FLOOR) {
-            throw new RuntimeException("Floor nr " + destinationFloor + " does not exist!");
-        }
-    }
-
-    private void determineAndSetDirection() {
-        if (getNextDestination() > currentFloor) {
-            direction = Direction.UPWARDS;
-        } else if (getNextDestination() < currentFloor) {
-            direction = Direction.DOWNWARDS;
-        } else {
-            System.out.println("You are on this floor :)");
-            setElevatorIdle();
-        }
+        return false;
     }
 
     public boolean isElevatorIdle() {
@@ -208,20 +182,8 @@ public class Elevator {
         return ID;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor;
-    }
-
     public void setCurrentFloor(int currentFloor) {
         this.currentFloor = currentFloor;
-    }
-
-    public Direction getDirection() {
-        return direction;
     }
 
     public void setDirection(Direction direction) {
