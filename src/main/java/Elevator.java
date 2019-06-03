@@ -20,69 +20,6 @@ public class Elevator {
         this.direction = direction;
     }
 
-    public int calculateCost(PickupRequest request) {
-        int cost = 0;
-        Direction passengerDirection = ElevatorUtils.determineDirection(request);
-        List<Integer> newDestinationFloors = prepareNewDestinationFloors(request);
-
-        if (isElevatorIdle()) {
-            cost += calculateCostForIdleElevator(request);
-        } else if (isPassengerOnCourse(passengerDirection, request.getPickupFloor())) {
-            cost += calculateCostForPassengerOnCourse(newDestinationFloors, request.getTargetFloor());
-        } else {
-            cost = Integer.MAX_VALUE;
-        }
-
-        return cost;
-    }
-
-    private List<Integer> prepareNewDestinationFloors(PickupRequest request) {
-        List<Integer> newDestinationFloors = new ArrayList<>(this.destinationFloors);
-        newDestinationFloors.add(request.getPickupFloor());
-        newDestinationFloors.add(request.getTargetFloor());
-        Collections.sort(newDestinationFloors);
-        return newDestinationFloors;
-    }
-
-    private int calculateCostForIdleElevator(PickupRequest request) {
-        int cost = 0;
-        cost += ElevatorUtils.calculateTravelCost(currentFloor, request.getPickupFloor());
-        cost += ElevatorUtils.calculateTravelCost(request.getPickupFloor(), request.getTargetFloor());
-        return cost;
-    }
-
-    private boolean isPassengerOnCourse(Direction passengerDirection, int pickupFloor) {
-        if (this.direction == passengerDirection) {
-            switch (direction) {
-                case UPWARDS:
-                    return pickupFloor > currentFloor;
-
-                case DOWNWARDS:
-                    return pickupFloor < currentFloor;
-            }
-        }
-
-        return false;
-    }
-
-    private int calculateCostForPassengerOnCourse(List<Integer> newDestinationFloors, int targetFloor) {
-        int cost = 0;
-        cost += ElevatorUtils.calculateTravelCost(currentFloor, targetFloor);
-        int stops = (int) determineStopsCount(newDestinationFloors, targetFloor);
-        cost += ElevatorController.STOP_COST * stops;
-        return cost;
-    }
-
-    private long determineStopsCount(List<Integer> floors, int targetFloor) {
-        if (targetFloor > getLastDestination()) {
-            return floors.stream().filter(floor ->
-                    Collections.frequency(floors, floor) <= 1 && floor < targetFloor).count();
-        } else {
-            return floors.stream().filter(floor ->
-                    Collections.frequency(floors, floor) <= 1 && floor <= targetFloor).count();
-        }
-    }
-
     public int getLastDestination() {
         return destinationFloors.get(destinationFloors.size() - 1);
     }
@@ -186,11 +123,39 @@ public class Elevator {
         return false;
     }
 
-    public int getID() {
-        return ID;
+    public boolean isPassengerOnCourse(Direction passengerDirection, int pickupFloor) {
+        int currentFloor = getCurrentFloor();
+
+        if (direction == passengerDirection) {
+            switch (getDirection()) {
+                case UPWARDS:
+                    return pickupFloor > currentFloor;
+
+                case DOWNWARDS:
+                    return pickupFloor < currentFloor;
+            }
+        }
+
+        return false;
+    }
+
+    public int calculateCost(PickupRequest pickupRequest) {
+        return ElevatorCalculator.calculateCost(this, pickupRequest);
+    }
+
+    public int getCurrentFloor() {
+        return currentFloor;
     }
 
     public void setCurrentFloor(int currentFloor) {
         this.currentFloor = currentFloor;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public int getID() {
+        return ID;
     }
 }
