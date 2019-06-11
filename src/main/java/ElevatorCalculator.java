@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ElevatorCalculator {
 
-    public static int calculateCost(Elevator elevator, PickupRequest request) {
+    public static int calculateTravelCost(Elevator elevator, PickupRequest request) {
         int cost = 0;
         Direction passengerDirection = ElevatorUtils.determineDirection(request);
 
@@ -22,22 +22,22 @@ public class ElevatorCalculator {
     private static int calculateCostForIdleElevator(Elevator elevator, PickupRequest request) {
         int cost = 0;
 
-        int fromCurrentToRequestFloor = calculateTravelCost(elevator.getCurrentFloor(), request.getPickupFloor());
-        int fromPickupToTargetFloor = calculateTravelCost(request.getPickupFloor(), request.getTargetFloor());
+        int fromCurrentToRequestFloor = calculateFloorPassCost(elevator.getCurrentFloor(), request.getPickupFloor());
+        int fromPickupToTargetFloor = calculateFloorPassCost(request.getPickupFloor(), request.getTargetFloor());
         cost += fromCurrentToRequestFloor;
         cost += fromPickupToTargetFloor;
 
         return cost;
     }
 
-    public static int calculateTravelCost(int startFloor, int finishFloor) {
+    public static int calculateFloorPassCost(int startFloor, int finishFloor) {
         return ElevatorController.FLOOR_PASS_COST * Math.abs(finishFloor - startFloor);
     }
 
     private static int calculateCostForPassengerOnCourse(Elevator elevator, PickupRequest request) {
         int cost = 0;
 
-        int fromCurrentToTargetFloor = calculateTravelCost(elevator.getCurrentFloor(), request.getTargetFloor());
+        int fromCurrentToTargetFloor = calculateFloorPassCost(elevator.getCurrentFloor(), request.getTargetFloor());
         int stops = (int) determineStopsCount(elevator, request);
         cost += fromCurrentToTargetFloor;
         cost += ElevatorController.STOP_COST * stops;

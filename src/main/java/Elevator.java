@@ -139,8 +139,8 @@ public class Elevator {
         return false;
     }
 
-    public int calculateCost(PickupRequest pickupRequest) {
-        return ElevatorCalculator.calculateCost(this, pickupRequest);
+    public int calculateTravelCost(PickupRequest pickupRequest) {
+        return ElevatorCalculator.calculateTravelCost(this, pickupRequest);
     }
 
     public int getCurrentFloor() {

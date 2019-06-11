@@ -67,7 +67,7 @@ public class ElevatorController implements ElevatorSystem {
         Map<Integer, Integer> costs = new HashMap<>();
 
         for (Elevator elevator : elevators) {
-            int cost = elevator.calculateCost(request);
+            int cost = elevator.calculateTravelCost(request);
             costs.put(elevator.getID(), cost);
             System.out.printf("Elevator #%d, cost: %d\n", elevator.getID(), cost);
         }
