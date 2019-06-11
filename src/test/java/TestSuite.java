@@ -4,8 +4,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
-        TestCases.class,
-        AdvancedTestCases.class
+        SimpleSingleElevatorTests.class,
+        SingleElevatorTests.class
 })
 
 public class TestSuite {

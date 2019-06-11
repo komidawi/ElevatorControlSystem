@@ -2,10 +2,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AdvancedTestCases {
+public class SingleElevatorTests {
 
     @Test
-    public void testCase1() {
+    public void testTravelCost_StartFloor_0_AddDestinations_1_4_Pickup_2_to_5() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(1);
@@ -15,7 +15,7 @@ public class AdvancedTestCases {
     }
 
     @Test
-    public void testCase2() {
+    public void testTravelCost_StartFloor_0_AddDestinations_2_5_7_Pickup_3_to_9() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(2);
@@ -26,7 +26,7 @@ public class AdvancedTestCases {
     }
 
     @Test
-    public void testCase3() {
+    public void testTravelCost_StartFloor_0_AddDestinations_2_Pickup_4_to_6() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(2);
         int cost = 4 * ElevatorController.FLOOR_PASS_COST;
@@ -34,7 +34,7 @@ public class AdvancedTestCases {
     }
 
     @Test
-    public void testCase4() {
+    public void testTravelCost_StartFloor_0_AddDestinations_3_4_6_8_Pickup_3_to_6() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(3);
@@ -46,13 +46,7 @@ public class AdvancedTestCases {
     }
 
     @Test
-    public void testCase5() {
-
-    }
-
-    @Test
-    public void testCase6() {
-        // model test #1.1
+    public void testTravelCost_StartFloor_0_AddDestinations_2_5_7_Pickup_4_to_6() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(2);
@@ -63,8 +57,7 @@ public class AdvancedTestCases {
     }
 
     @Test
-    public void testCase7() {
-        // model test #1.2
+    public void testTravelCost_StartFloor_0_AddDestinations_3_6_7_Pickup_3_to_6() {
         Elevator elevator = new Elevator(0);
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(3);
