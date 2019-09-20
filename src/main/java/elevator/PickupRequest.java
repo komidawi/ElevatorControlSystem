@@ -1,6 +1,8 @@
+package elevator;
+
 public class PickupRequest {
-    int pickupFloor;
-    int targetFloor;
+    private int pickupFloor;
+    private int targetFloor;
 
     public PickupRequest(int pickupFloor, int targetFloor) {
         this.pickupFloor = pickupFloor;

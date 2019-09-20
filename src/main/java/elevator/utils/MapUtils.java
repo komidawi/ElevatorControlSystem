@@ -1,3 +1,5 @@
+package elevator.utils;
+
 import java.util.Map;
 
 public class MapUtils {

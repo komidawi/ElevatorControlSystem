@@ -1,3 +1,6 @@
+import elevator.Elevator;
+import elevator.ElevatorCalculator;
+import elevator.PickupRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,8 +20,8 @@ public class SingleElevatorTests {
         elevator.setCurrentFloor(0);
         elevator.addDestinationFloor(1);
         elevator.addDestinationFloor(4);
-        int cost = 5 * ElevatorController.FLOOR_PASS_COST + 3 * ElevatorController.STOP_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(2, 5)));
+        int cost = 5 * ElevatorCalculator.FLOOR_PASS_COST + 3 * ElevatorCalculator.STOP_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(2, 5)));
     }
 
     @Test
@@ -27,15 +30,15 @@ public class SingleElevatorTests {
         elevator.addDestinationFloor(2);
         elevator.addDestinationFloor(5);
         elevator.addDestinationFloor(7);
-        int cost = 9 * ElevatorController.FLOOR_PASS_COST + 4 * ElevatorController.STOP_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(3, 9)));
+        int cost = 9 * ElevatorCalculator.FLOOR_PASS_COST + 4 * ElevatorCalculator.STOP_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(3, 9)));
     }
 
     @Test
     public void testTravelCost_StartFloor_0_AddDestinations_2_Pickup_4_to_6() {
         elevator.setCurrentFloor(2);
-        int cost = 4 * ElevatorController.FLOOR_PASS_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(4, 6)));
+        int cost = 4 * ElevatorCalculator.FLOOR_PASS_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(4, 6)));
     }
 
     @Test
@@ -45,8 +48,8 @@ public class SingleElevatorTests {
         elevator.addDestinationFloor(4);
         elevator.addDestinationFloor(6);
         elevator.addDestinationFloor(8);
-        int cost = 6 * ElevatorController.FLOOR_PASS_COST + ElevatorController.STOP_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(3, 6)));
+        int cost = 6 * ElevatorCalculator.FLOOR_PASS_COST + ElevatorCalculator.STOP_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(3, 6)));
     }
 
     @Test
@@ -55,8 +58,8 @@ public class SingleElevatorTests {
         elevator.addDestinationFloor(2);
         elevator.addDestinationFloor(5);
         elevator.addDestinationFloor(7);
-        int cost = 6 * ElevatorController.FLOOR_PASS_COST + 4 * ElevatorController.STOP_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(4, 6)));
+        int cost = 6 * ElevatorCalculator.FLOOR_PASS_COST + 4 * ElevatorCalculator.STOP_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(4, 6)));
     }
 
     @Test
@@ -65,7 +68,7 @@ public class SingleElevatorTests {
         elevator.addDestinationFloor(3);
         elevator.addDestinationFloor(6);
         elevator.addDestinationFloor(7);
-        int cost = 6 * ElevatorController.FLOOR_PASS_COST;
-        assertEquals(cost, elevator.calculateTravelCost(new PickupRequest(3, 6)));
+        int cost = 6 * ElevatorCalculator.FLOOR_PASS_COST;
+        assertEquals(cost, ElevatorCalculator.calculateTravelCost(elevator, new PickupRequest(3, 6)));
     }
 }
