@@ -76,7 +76,6 @@ public class ElevatorController implements ElevatorSystem {
         validateDestinationFloor(destinationFloor);
         Elevator elevator = elevators.get(elevatorID);
         elevator.addDestinationFloor(destinationFloor);
-        System.out.println("Elevator #" + elevatorID + ": added destination floor: " + destinationFloor);
     }
 
     @Override
@@ -96,9 +95,5 @@ public class ElevatorController implements ElevatorSystem {
         if (destinationFloor > MAXIMUM_FLOOR || destinationFloor < MINIMUM_FLOOR) {
             throw new IllegalArgumentException("Floor nr " + destinationFloor + " does not exist!");
         }
-    }
-
-    public Elevator getElevator(int ID) {
-        return elevators.get(ID);
     }
 }

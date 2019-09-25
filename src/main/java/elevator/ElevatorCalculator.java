@@ -2,9 +2,7 @@ package elevator;
 
 import elevator.utils.ElevatorUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ElevatorCalculator {
     public static final int FLOOR_PASS_COST = 3;
@@ -29,14 +27,12 @@ public class ElevatorCalculator {
 
         long fromCurrentToRequestFloor = calculateFloorPassCost(elevator.getCurrentFloor(), request.getPickupFloor());
         long fromPickupToTargetFloor = calculateFloorPassCost(request.getPickupFloor(), request.getTargetFloor());
+        long stops = determineStopsCount(elevator, request);
         cost += fromCurrentToRequestFloor;
         cost += fromPickupToTargetFloor;
+        cost += stops * STOP_COST;
 
         return cost;
-    }
-
-    private static long calculateFloorPassCost(int startFloor, int finishFloor) {
-        return FLOOR_PASS_COST * Math.abs(finishFloor - startFloor);
     }
 
     private static long calculateCostWhenPassengerOnCourse(Elevator elevator, PickupRequest request) {
@@ -50,15 +46,15 @@ public class ElevatorCalculator {
         return cost;
     }
 
+    private static int calculateFloorPassCost(int startFloor, int finishFloor) {
+        return FLOOR_PASS_COST * Math.abs(finishFloor - startFloor);
+    }
+
     private static long determineStopsCount(Elevator elevator, PickupRequest request) {
         int targetFloor = request.getTargetFloor();
         List<Integer> newDestinationFloors = prepareNewDestinationFloors(elevator, request);
 
-        if (targetFloor > elevator.getLastDestination()) {
-            return countStopsWhenTargetBeforeDestination(newDestinationFloors, targetFloor);
-        } else {
-            return countStopsWhenTargetNotBeforeDestination(newDestinationFloors, targetFloor);
-        }
+        return countStops(newDestinationFloors, targetFloor);
     }
 
     private static List<Integer> prepareNewDestinationFloors(Elevator elevator, PickupRequest request) {
@@ -71,15 +67,8 @@ public class ElevatorCalculator {
         return newDestinationFloors;
     }
 
-    private static long countStopsWhenTargetBeforeDestination(List<Integer> floors, int targetFloor) {
-        return floors.stream().filter(floor ->
-                Collections.frequency(floors, floor) <= 1   // don't count the same floor twice
-                        && floor < targetFloor).count();
-    }
-
-    private static long countStopsWhenTargetNotBeforeDestination(List<Integer> floors, int targetFloor) {
-        return floors.stream().filter(floor ->
-                Collections.frequency(floors, floor) <= 1   // don't count the same floor twice
-                        && floor <= targetFloor).count();
+    private static long countStops(List<Integer> floors, int targetFloor) {
+        return new LinkedHashSet<>(floors).stream().filter(floor ->
+                floor <= targetFloor).count();
     }
 }

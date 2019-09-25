@@ -16,16 +16,33 @@ public class Elevator {
     }
 
     public void addDestinationFloor(int destinationFloor) {
+        try {
+            handleAddDestinationFloor(destinationFloor);
+            System.out.println("Elevator #" + this.ID + ": added destination floor: " + destinationFloor);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void handleAddDestinationFloor(int destinationFloor) {
         Direction destinationDirection = ElevatorUtils.determineDirection(currentFloor, destinationFloor);
 
         if (isElevatorIdle()) {
             destinationFloors.add(destinationFloor);
             direction = destinationDirection;
-        } else if (direction == destinationDirection && !destinationFloors.contains(destinationFloor)) {
-            destinationFloors.add(destinationFloor);
-            Collections.sort(destinationFloors);
+        } else if (direction == destinationDirection) {
+            if (!destinationFloors.contains(destinationFloor)) {
+                destinationFloors.add(destinationFloor);
+                Collections.sort(destinationFloors);
+            }
         } else {
-            System.out.println("Currently system does not support this case. Please wait for a free elevator");
+            throw new RuntimeException("Currently system does not support this case. Please wait for a free elevator");
+        }
+    }
+
+    public void addMultipleDestinationFloors(int[] destinationFloors) {
+        for (int floor : destinationFloors) {
+            addDestinationFloor(floor);
         }
     }
 
@@ -73,20 +90,6 @@ public class Elevator {
         }
     }
 
-    public boolean isPassengerOnCourse(Direction passengerDirection, int pickupFloor) {
-        if (direction == passengerDirection) {
-            switch (direction) {
-                case UPWARDS:
-                    return pickupFloor > currentFloor;
-
-                case DOWNWARDS:
-                    return pickupFloor < currentFloor;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public String toString() {
         return String.format("Elevator: %d, currentFloor: %d, destinationFloors: %s, direction: %s",
@@ -113,15 +116,13 @@ public class Elevator {
         return destinationFloors.get(0);
     }
 
-    public int getLastDestination() {
-        return destinationFloors.get(destinationFloors.size() - 1);
-    }
-
     public List<Integer> getDestinationFloors() {
         return destinationFloors;
     }
 
-    public Direction getDirection() { return direction; }
+    public Direction getDirection() {
+        return direction;
+    }
 
     public int getCurrentFloor() {
         return currentFloor;
