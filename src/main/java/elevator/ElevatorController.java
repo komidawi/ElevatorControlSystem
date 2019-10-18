@@ -96,4 +96,8 @@ public class ElevatorController implements ElevatorSystem {
             throw new IllegalArgumentException("Floor nr " + destinationFloor + " does not exist!");
         }
     }
+
+    public Elevator getElevator(int ID) {
+        return elevators.get(ID);
+    }
 }

@@ -80,9 +80,9 @@ public class Elevator {
     }
 
     private void handleCurrentDestination() {
-        destinationFloors.remove(0);
 
         System.out.print("Elevator " + ID + " reached its destination floor: " + getNextDestination());
+        destinationFloors.remove(0);
         System.out.println(", floors remaining: " + getDestinationFloors());
 
         if (destinationFloors.isEmpty()) {
