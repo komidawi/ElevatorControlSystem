@@ -52,23 +52,34 @@ public class ElevatorCalculator {
 
     private static long determineStopsCount(Elevator elevator, PickupRequest request) {
         int targetFloor = request.getTargetFloor();
-        List<Integer> newDestinationFloors = prepareNewDestinationFloors(elevator, request);
+        List<Integer> destinationFloors = prepareNewDestinationFloors(elevator, request);
 
-        return countStops(newDestinationFloors, targetFloor);
+        return countStops(destinationFloors, targetFloor);
     }
 
     private static List<Integer> prepareNewDestinationFloors(Elevator elevator, PickupRequest request) {
-        List<Integer> newDestinationFloors = new ArrayList<>(elevator.getDestinationFloors());
+        List<Integer> destinationFloors = new ArrayList<>(elevator.getDestinationFloors());
 
-        newDestinationFloors.add(request.getPickupFloor());
-        newDestinationFloors.add(request.getTargetFloor());
-        Collections.sort(newDestinationFloors);
+        destinationFloors.add(request.getPickupFloor());
+        destinationFloors.add(request.getTargetFloor());
+        Collections.sort(destinationFloors);
 
-        return newDestinationFloors;
+        if (elevator.getDirection() == Direction.DOWNWARDS) {
+            Collections.reverse(destinationFloors);
+        }
+
+        return destinationFloors;
     }
 
     private static long countStops(List<Integer> floors, int targetFloor) {
-        return new LinkedHashSet<>(floors).stream().filter(floor ->
-                floor <= targetFloor).count();
+        HashSet<Integer> uniqueFloors = new LinkedHashSet<>(floors);
+        Iterator<Integer> iterator = uniqueFloors.iterator();
+
+        long stops = 1;
+        while (iterator.hasNext() && iterator.next() != targetFloor) {
+            stops++;
+        }
+
+        return stops;
     }
 }
