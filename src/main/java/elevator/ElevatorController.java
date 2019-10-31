@@ -1,3 +1,7 @@
+package elevator;
+
+import elevator.utils.MapUtils;
+
 import java.util.*;
 
 public class ElevatorController implements ElevatorSystem {
@@ -5,8 +9,6 @@ public class ElevatorController implements ElevatorSystem {
     public static final int MAX_ELEVATORS = 16;
     public static final int MINIMUM_FLOOR = 0;
     public static final int MAXIMUM_FLOOR = 10;
-    public static final int FLOOR_PASS_COST = 3;
-    public static final int STOP_COST = 10;
     private static int stepNumber;
     private List<Elevator> elevators = new ArrayList<>();
 
@@ -17,19 +19,13 @@ public class ElevatorController implements ElevatorSystem {
 
     private void validateElevatorCount(int elevatorCount) {
         if (elevatorCount > MAX_ELEVATORS || elevatorCount <= 0) {
-            throw new RuntimeException("System is supposed to handle from 0 up to maximum " + MAX_ELEVATORS + " elevators");
+            throw new RuntimeException("System is supposed to handle from 1 up to maximum " + MAX_ELEVATORS + " elevators");
         }
     }
 
     private void initializeElevators(int elevatorCount) {
         for (int i = 0; i < elevatorCount; i++) {
             elevators.add(new Elevator(i));
-        }
-    }
-
-    public static void validateDestinationFloor(int destinationFloor) throws IllegalArgumentException {
-        if (destinationFloor > MAXIMUM_FLOOR || destinationFloor < MINIMUM_FLOOR) {
-            throw new IllegalArgumentException("Floor nr " + destinationFloor + " does not exist!");
         }
     }
 
@@ -49,9 +45,9 @@ public class ElevatorController implements ElevatorSystem {
     }
 
     public Integer findCheapestElevator(PickupRequest request) {
-        Map<Integer, Integer> costs = calculateCosts(request);
+        Map<Integer, Long> costs = calculateCosts(request);
 
-        Integer minimumCost = Collections.min(costs.values());
+        Long minimumCost = Collections.min(costs.values());
 
         if (minimumCost != Integer.MAX_VALUE) {
             Integer cheapestElevatorID = MapUtils.getKey(costs, minimumCost);
@@ -63,11 +59,11 @@ public class ElevatorController implements ElevatorSystem {
         }
     }
 
-    private Map<Integer, Integer> calculateCosts(PickupRequest request) {
-        Map<Integer, Integer> costs = new HashMap<>();
+    private Map<Integer, Long> calculateCosts(PickupRequest request) {
+        Map<Integer, Long> costs = new HashMap<>();
 
         for (Elevator elevator : elevators) {
-            int cost = elevator.calculateCost(request);
+            long cost = ElevatorCalculator.calculateTravelCost(elevator, request);
             costs.put(elevator.getID(), cost);
             System.out.printf("Elevator #%d, cost: %d\n", elevator.getID(), cost);
         }
@@ -77,9 +73,9 @@ public class ElevatorController implements ElevatorSystem {
 
     @Override
     public void addDestinationFloor(int elevatorID, int destinationFloor) {
+        validateDestinationFloor(destinationFloor);
         Elevator elevator = elevators.get(elevatorID);
         elevator.addDestinationFloor(destinationFloor);
-        System.out.println("Elevator #" + elevatorID + ": added destination floor: " + destinationFloor);
     }
 
     @Override
@@ -92,7 +88,13 @@ public class ElevatorController implements ElevatorSystem {
     public void nextStep() {
         System.out.printf("\n[STEP #%d]\n", stepNumber);
         stepNumber++;
-        elevators.forEach(Elevator::nextStep);
+        elevators.forEach(Elevator::performNextStep);
+    }
+
+    public static void validateDestinationFloor(int destinationFloor) {
+        if (destinationFloor > MAXIMUM_FLOOR || destinationFloor < MINIMUM_FLOOR) {
+            throw new IllegalArgumentException("Floor nr " + destinationFloor + " does not exist!");
+        }
     }
 
     public Elevator getElevator(int ID) {

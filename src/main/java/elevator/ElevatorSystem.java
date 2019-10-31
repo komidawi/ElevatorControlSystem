@@ -1,3 +1,5 @@
+package elevator;
+
 public interface ElevatorSystem {
     void showStatus();
     void addDestinationFloor(int elevatorID, int destinationFloor);
