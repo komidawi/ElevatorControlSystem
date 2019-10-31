@@ -1,9 +1,16 @@
-﻿# Elevator Control System
+# Update 31.10.2019
+Project status changes to: abandoned
+
+It's time to create something new with potential to become practial for the real end user :)
+
+Comment: This was the very first project written from the scratch by myself without any help of other people and/or courses. I would like to leave it as a milestone in software developer career and go futher with experience gained during creating this system. 
+
+***
+
+# Elevator Control System
 
 Elevator Control System provides functionality to handle elevator movement efficiently. It calculates a minimum cost of travel from pickup to destination floor and then sends an appropriate elevator. The main advantage of this destination dispatch system over trivial FCFS scheduling is an ability to take a passenger on-the-fly without unnecessary waiting until all remaining destinations are reached. It also cares of cases when current and coming passengers have common pickup/destination floors and groups them.
 
-
-Note: Project is still in development phase.
 
 ## Usage
 
